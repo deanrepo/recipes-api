@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -84,6 +85,54 @@ func UpdateRecipeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, recipe)
 }
 
+func DeleteRecipeHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	index := -1
+
+	for idx, v := range recipes {
+		if v.ID == id {
+			index = idx
+			break
+		}
+	}
+
+	if index == -1 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Recipe not found",
+		})
+
+		return
+	}
+
+	recipes = append(recipes[:index], recipes[index+1:]...)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Recipe has been deleted",
+	})
+}
+
+func SearchRecipesHandler(c *gin.Context) {
+	tag := c.Query("tag")
+	listOfRecipes := make([]Recipe, 0)
+
+	for _, v := range recipes {
+		found := false
+
+		for _, t := range v.Tags {
+			if strings.EqualFold(t, tag) {
+				found = true
+				break
+			}
+		}
+
+		if found {
+			listOfRecipes = append(listOfRecipes, v)
+		}
+	}
+
+	c.JSON(http.StatusOK, listOfRecipes)
+}
+
 func main() {
 	router := gin.Default()
 
@@ -92,6 +141,10 @@ func main() {
 	router.GET("/recipes", ListRecipesHandler)
 
 	router.PUT("/recipes/:id", UpdateRecipeHandler)
+
+	router.DELETE("/recipes/:id", DeleteRecipeHandler)
+
+	router.GET("/recipes/search", SearchRecipesHandler)
 
 	router.Run()
 }
