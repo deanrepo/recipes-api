@@ -47,6 +47,55 @@
           "recipes"
         ],
         "operationId": "newRecipe",
+        "parameters": [
+          {
+            "$ref": "#/definitions/ObjectID",
+            "x-go-name": "ID",
+            "description": "sawgger:ignore",
+            "name": "id",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "x-go-name": "Name",
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-go-name": "Tags",
+            "name": "tags",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-go-name": "Ingredients",
+            "name": "ingredients",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-go-name": "Instructions",
+            "name": "instructions",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "PublishedAt",
+            "name": "publishedAt",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful operation"
@@ -162,6 +211,17 @@
           }
         }
       }
+    }
+  },
+  "definitions": {
+    "ObjectID": {
+      "type": "array",
+      "title": "ObjectID is the BSON ObjectID type.",
+      "items": {
+        "type": "integer",
+        "format": "uint8"
+      },
+      "x-go-package": "go.mongodb.org/mongo-driver/bson/primitive"
     }
   }
 }
