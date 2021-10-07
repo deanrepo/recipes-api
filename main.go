@@ -28,6 +28,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"study.recipes.api/handlers"
+	"study.recipes.api/middlewares"
 )
 
 var recipesHandler *handlers.RecipesHandler
@@ -62,17 +63,22 @@ func init() {
 func main() {
 	router := gin.Default()
 
-	router.POST("/recipes", recipesHandler.NewRecipeHandler)
-
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
 
-	router.PUT("/recipes/:id", recipesHandler.UpdateRecipeHandler)
+	authorized := router.Group("/")
 
-	router.DELETE("/recipes/:id", recipesHandler.DeleteRecipeHandler)
+	authorized.Use(middlewares.AuthMiddleware())
+	{
+		authorized.POST("/recipes", recipesHandler.NewRecipeHandler)
 
-	router.GET("/recipes/search", recipesHandler.SearchRecipesHandler)
+		authorized.PUT("/recipes/:id", recipesHandler.UpdateRecipeHandler)
 
-	router.GET("/recipes/:id", recipesHandler.GetRecipeHandler)
+		authorized.DELETE("/recipes/:id", recipesHandler.DeleteRecipeHandler)
+
+		authorized.GET("/recipes/search", recipesHandler.SearchRecipesHandler)
+
+		authorized.GET("/recipes/:id", recipesHandler.GetRecipeHandler)
+	}
 
 	router.Run()
 }

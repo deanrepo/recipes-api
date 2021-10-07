@@ -39,6 +39,7 @@ func NewRecipesHandler(ctx context.Context, collection *mongo.Collection, redisC
 //     '200':
 //         description: Successful operation
 func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
+
 	val, err := handler.redisClient.Get(handler.ctx, "recipes").Result()
 
 	if err == redis.Nil {
@@ -93,6 +94,7 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 //   '400':
 //     description: Invalid input
 func (handler *RecipesHandler) NewRecipeHandler(c *gin.Context) {
+
 	var recipe models.Recipe
 
 	if err := c.ShouldBindJSON(&recipe); err != nil {
