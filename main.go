@@ -31,7 +31,10 @@ import (
 	"study.recipes.api/middlewares"
 )
 
-var recipesHandler *handlers.RecipesHandler
+var (
+	authHandler    *handlers.AuthHandler
+	recipesHandler *handlers.RecipesHandler
+)
 
 func init() {
 	ctx := context.Background()
@@ -47,6 +50,8 @@ func init() {
 
 	collection := client.Database(os.Getenv("MONGO_DATABASE")).Collection("recipes")
 
+	collectionUsers := client.Database(os.Getenv("MONGO_DATABASE")).Collection("users")
+
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
@@ -58,12 +63,19 @@ func init() {
 
 	recipesHandler = handlers.NewRecipesHandler(ctx, collection, redisClient)
 
+	authHandler = handlers.NewAuthHandler(ctx, collectionUsers)
 }
 
 func main() {
 	router := gin.Default()
 
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
+
+	router.POST("/signin", authHandler.SignInHandler)
+
+	router.POST("/refresh", authHandler.RefreshHandler)
+
+	router.POST("/signup", authHandler.SignUpHandler)
 
 	authorized := router.Group("/")
 
