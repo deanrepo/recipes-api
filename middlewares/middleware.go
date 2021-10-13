@@ -2,30 +2,24 @@ package middlewares
 
 import (
 	"net/http"
-	"os"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"study.recipes.api/handlers"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-		tokenValue := c.GetHeader("Authorization")
+		session := sessions.Default(c)
 
-		claims := &handlers.Claims{}
+		sessionToken := session.Get("token")
 
-		tkn, err := jwt.ParseWithClaims(tokenValue, claims, func(t *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("JWT_SECRET")), nil
-		})
+		if sessionToken == nil {
+			c.JSON(http.StatusForbidden, gin.H{
+				"message": "Not logged",
+			})
 
-		if err != nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
-		}
-
-		if tkn == nil || !tkn.Valid {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.Abort()
 		}
 
 		c.Next()
