@@ -8,6 +8,15 @@
 //	Version: 1.0.0
 //	Contact: Mohamed Labouardy <mohamed@labouardy.com> https://labouardy.com
 //
+//  Security:
+//  - api_key:
+//
+//   SecurityDefinitions:
+//   api_key:
+//        type: apiKey
+//        name: Authorization
+//        in: header
+//
 //	Consumes:
 //	- application/json
 //
@@ -69,6 +78,8 @@ func init() {
 func main() {
 	router := gin.Default()
 
+	router.Use(middlewares.CORSMiddleware())
+
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
 
 	router.POST("/signin", authHandler.SignInHandler)
@@ -93,4 +104,6 @@ func main() {
 	}
 
 	router.RunTLS(":8443", "certs/localhost.crt", "certs/localhost.key")
+
+	// router.Run()
 }

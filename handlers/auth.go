@@ -36,6 +36,18 @@ type JWTOutput struct {
 	Expires time.Time `json:"expires"`
 }
 
+// swagger:operation POST /signup auth signUp
+// Sign up with username and password
+// ---
+// produces:
+// - application/json
+// responses:
+//   '200':
+//     description: Successful operation
+//   '400':
+//     description: Bad request
+//   '500':
+//     description: Internal server error
 func (handler *AuthHandler) SignUpHandler(c *gin.Context) {
 	var user models.User
 
@@ -65,6 +77,16 @@ func (handler *AuthHandler) SignUpHandler(c *gin.Context) {
 	})
 }
 
+// swagger:operation POST /signin auth signIn
+// Login with username and password
+// ---
+// produces:
+// - application/json
+//responses:
+//   '200':
+//     description: Successful operation
+//   '401':
+//     description: Invalid credentials
 func (handler *AuthHandler) SignInHandler(c *gin.Context) {
 
 	var user models.User
@@ -121,6 +143,16 @@ func (handler *AuthHandler) SignInHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, jwtOutput)
 }
 
+// swagger:operation POST /refresh auth refresh
+// Refresh token
+// ---
+// produces:
+// - application/json
+// responses:
+//   '200':
+//     description: Successful operation
+//   '401':
+//     description: Invalid credentials
 func (handler *AuthHandler) RefreshHandler(c *gin.Context) {
 	tokenValue := c.GetHeader("Authorization")
 

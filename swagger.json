@@ -6,7 +6,7 @@
     "application/json"
   ],
   "schemes": [
-    "http"
+    "https"
   ],
   "swagger": "2.0",
   "info": {
@@ -19,7 +19,7 @@
     },
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "localhost:8443",
   "basePath": "/",
   "paths": {
     "/recipes": {
@@ -211,6 +211,89 @@
           }
         }
       }
+    },
+    "/refresh": {
+      "post": {
+        "description": "Refresh token",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "operationId": "refresh",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/signin": {
+      "post": {
+        "description": "Login with username and password",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "operationId": "signIn",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Password",
+            "name": "password",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "x-go-name": "Username",
+            "name": "username",
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/signup": {
+      "post": {
+        "description": "Sign up with username and password",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "operationId": "signUp",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "Password",
+            "name": "password",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "x-go-name": "Username",
+            "name": "username",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -223,5 +306,17 @@
       },
       "x-go-package": "go.mongodb.org/mongo-driver/bson/primitive"
     }
-  }
+  },
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "api_key": []
+    }
+  ]
 }
