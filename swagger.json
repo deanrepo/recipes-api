@@ -6,7 +6,7 @@
     "application/json"
   ],
   "schemes": [
-    "https"
+    "http"
   ],
   "swagger": "2.0",
   "info": {
@@ -19,9 +19,38 @@
     },
     "version": "1.0.0"
   },
-  "host": "localhost:8443",
+  "host": "localhost:8080",
   "basePath": "/",
   "paths": {
+    "/profile": {
+      "get": {
+        "description": "Return user profile",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "operationId": "userProfile",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "user name to look for",
+            "name": "username",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
     "/recipes": {
       "get": {
         "description": "Returns list of recipes",

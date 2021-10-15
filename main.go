@@ -101,9 +101,11 @@ func main() {
 		authorized.GET("/recipes/search", recipesHandler.SearchRecipesHandler)
 
 		authorized.GET("/recipes/:id", recipesHandler.GetRecipeHandler)
+
+		authorized.GET("/profile", authHandler.ProfileHandler)
 	}
 
-	router.RunTLS(":8443", "certs/localhost.crt", "certs/localhost.key")
+	// router.RunTLS(":8443", "certs/localhost.crt", "certs/localhost.key")
 
-	// router.Run()
+	router.Run()
 }

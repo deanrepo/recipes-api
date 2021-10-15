@@ -59,21 +59,31 @@ func (handler *AuthHandler) SignUpHandler(c *gin.Context) {
 		return
 	}
 
-	h := sha256.New()
-
-	if _, err := handler.collection.InsertOne(handler.ctx, bson.M{
+	cur := handler.collection.FindOne(handler.ctx, bson.M{
 		"username": user.Username,
-		"password": string(h.Sum([]byte(user.Password))),
-	}); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+	})
 
-		return
+	if cur.Err() == mongo.ErrNoDocuments {
+		h := sha256.New()
+
+		if _, err := handler.collection.InsertOne(handler.ctx, bson.M{
+			"username": user.Username,
+			"password": string(h.Sum([]byte(user.Password))),
+		}); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Successfully sign up",
+		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully sign up",
+	c.JSON(http.StatusInternalServerError, gin.H{
+		"error": "Username already taken",
 	})
 }
 
@@ -208,4 +218,42 @@ func (handler *AuthHandler) RefreshHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, jwtOutput)
+}
+
+// swagger:operation GET /profile auth userProfile
+// Return user profile
+// ---
+// parameters:
+// - name: username
+//   in: query
+//   description: user name to look for
+//   type: string
+//   required: true
+// produces:
+// - application/json
+// responses:
+//   '200':
+//     description: Successful operation
+//   '400':
+//     description: Bad request
+func (handler *AuthHandler) ProfileHandler(c *gin.Context) {
+	var user models.User
+
+	username := c.Query("username")
+
+	cur := handler.collection.FindOne(handler.ctx, bson.M{
+		"username": username,
+	})
+
+	if cur.Err() == mongo.ErrNoDocuments {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "User not exist",
+		})
+
+		return
+	}
+
+	cur.Decode(&user)
+
+	c.JSON(http.StatusOK, user)
 }
