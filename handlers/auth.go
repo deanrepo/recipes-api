@@ -162,6 +162,14 @@ func (handler *AuthHandler) RefreshHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, jwtOutput)
 }
 
+// swagger:operation POST /signup auth signup
+// User sign out
+// ---
+// produces:
+// - application/json
+// responses:
+//   '200':
+//     description: Successful operation
 func (handler *AuthHandler) SignOutHandler(c *gin.Context) {
 	session := sessions.Default(c)
 

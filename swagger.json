@@ -211,6 +211,23 @@
           }
         }
       }
+    },
+    "/signup": {
+      "post": {
+        "description": "User sign out",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "operationId": "signup",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
     }
   },
   "definitions": {
