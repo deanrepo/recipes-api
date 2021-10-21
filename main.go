@@ -41,7 +41,6 @@ import (
 )
 
 var (
-	authHandler    *handlers.AuthHandler
 	recipesHandler *handlers.RecipesHandler
 )
 
@@ -59,8 +58,6 @@ func init() {
 
 	collection := client.Database(os.Getenv("MONGO_DATABASE")).Collection("recipes")
 
-	collectionUsers := client.Database(os.Getenv("MONGO_DATABASE")).Collection("users")
-
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
@@ -71,8 +68,6 @@ func init() {
 	fmt.Println(status)
 
 	recipesHandler = handlers.NewRecipesHandler(ctx, collection, redisClient)
-
-	authHandler = handlers.NewAuthHandler(ctx, collectionUsers)
 }
 
 func main() {
@@ -82,30 +77,15 @@ func main() {
 
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
 
-	router.POST("/signin", authHandler.SignInHandler)
+	router.POST("/recipes", recipesHandler.NewRecipeHandler)
 
-	router.POST("/refresh", authHandler.RefreshHandler)
+	router.PUT("/recipes/:id", recipesHandler.UpdateRecipeHandler)
 
-	router.POST("/signup", authHandler.SignUpHandler)
+	router.DELETE("/recipes/:id", recipesHandler.DeleteRecipeHandler)
 
-	authorized := router.Group("/")
+	router.GET("/recipes/search", recipesHandler.SearchRecipesHandler)
 
-	authorized.Use(middlewares.AuthMiddleware())
-	{
-		authorized.POST("/recipes", recipesHandler.NewRecipeHandler)
-
-		authorized.PUT("/recipes/:id", recipesHandler.UpdateRecipeHandler)
-
-		authorized.DELETE("/recipes/:id", recipesHandler.DeleteRecipeHandler)
-
-		authorized.GET("/recipes/search", recipesHandler.SearchRecipesHandler)
-
-		authorized.GET("/recipes/:id", recipesHandler.GetRecipeHandler)
-
-		authorized.GET("/profile", authHandler.ProfileHandler)
-	}
-
-	// router.RunTLS(":8443", "certs/localhost.crt", "certs/localhost.key")
+	router.GET("/recipes/:id", recipesHandler.GetRecipeHandler)
 
 	router.Run()
 }

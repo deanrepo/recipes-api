@@ -10,5 +10,5 @@ serve:
 serve_swagger:
 	swagger serve --flavor=swagger --no-open ./swagger.json	
 
-jwt_run:
-	JWT_SECRET=eUbP9shywUygMx7u MONGO_URI="mongodb://admin:password@localhost:27017/test?authSource=admin" MONGO_DATABASE=demo go run *.go
+raw_run:
+	MONGO_URI="mongodb://admin:password@localhost:27017/test?authSource=admin" MONGO_DATABASE=demo go run *.go
